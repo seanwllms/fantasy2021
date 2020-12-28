@@ -1,0 +1,391 @@
+
+library(tidyverse)
+###Load the coefficients data frame
+load("coefs.rda")
+
+###############################################################
+################HITTER STUFF LIVES HERE#########################
+################################################################
+
+#make lists of file names
+getfiles <- function(proj) {
+
+  #build list of paths to files
+  folder <- paste0("./", proj, "/") 
+  
+  
+  filelist <- list.files(folder) %>% 
+    discard(~(.x == "pitchers.csv" | .x == "pitcher.csv"))
+
+  if (length(filelist) > 0) {
+    filelist <- map_chr(filelist, function(x) paste0(folder, x))
+  } 
+  
+  #for each path, read csv file and clean it up
+  dfs <- map(filelist, function(x) {
+    
+    pos_name <- str_remove(x, folder) %>% str_remove(".csv")
+    
+    read_csv(x) %>%
+      mutate(proj=proj) %>% 
+      select(Name, Team, AB, PA, R,HR, RBI, SB, AVG, OBP, proj, playerid) %>% 
+      mutate( 
+        HR_pa = HR/PA,
+        R_pa = R/PA,
+        RBI_pa = RBI/PA,
+        SB_pa = SB/PA,
+        playerid = as.character(playerid),
+        position = pos_name)
+  })
+  
+  keep(dfs, ~!is.null(.x))
+}
+
+#build nested list with all of the data frames.
+hitter_data_frames <- map(PROJECTIONS, getfiles) %>% 
+  keep(~length(.x) > 1) 
+
+
+#build list of all projection systems successfully read
+proj_systems <- map_chr(hitter_data_frames, function(x){
+                  pluck(x, 1) %>% 
+                    pull(proj) %>% 
+                    unique() 
+                }) 
+                
+#assign names in df list
+names(hitter_data_frames) <- proj_systems
+
+####################################
+############   PECOTA   ############
+####################################
+#read in PECOTA data and rname variables to line up
+library(readxl)
+if (file.exists("./pecota/pecota2020_hitting_feb06.xlsx")) {
+  pecotahit<- read_xlsx("./pecota/pecota2020_hitting_feb06.xlsx") %>% 
+  select(name, bpid, team, pa, r, hr, rbi, sb, avg, oba) %>% 
+  mutate(Team = "pecotaflag")
+
+  #crosswalk PECOTA to BP
+  if (file.exists("./pecota/crosswalk.rda")) {
+    load("./pecota/crosswalk.rda")
+  } else {
+    crosswalk <- read_csv(url("http://crunchtimebaseball.com/master.csv")) %>%
+      rename(Name = fg_name, playerid=fg_id, bpid = bp_id) %>% 
+      select(Name, playerid, bpid)
+    save(crosswalk, file="./pecota/crosswalk.rda")
+  }
+  
+  pecotahit <- left_join(pecotahit, crosswalk) %>% 
+    select(-bpid) %>% 
+    rename(PA=pa, R=r, HR=hr, RBI=rbi, SB=sb, AVG = avg, OBP = oba) %>% 
+    mutate(HR_pa = HR/PA,
+           R_pa = R/PA,
+           RBI_pa = RBI/PA,
+           SB_pa = SB/PA,
+           playerid = as.character(playerid),
+           proj="pecota") %>% 
+    filter(!is.na(playerid))
+}
+
+
+####################################
+##### AGGREGAGE PROJECTIONS ########
+####################################
+aggregated <- bind_rows(hitter_data_frames)
+
+#merge all projections into data frame
+if (exists("pecotahit")) {
+  aggregated <- bind_rows(aggregated, pecotahit)
+}
+
+
+
+#get vector of player names and teams
+names <- aggregated %>% 
+  select(playerid, Name, Team) %>% 
+  distinct()
+
+#get vector of eligible positions 
+all_positions <- pull(aggregated, position) %>% 
+  unique() 
+ 
+positions <- select(aggregated, playerid, position) %>% 
+  distinct() %>% 
+  pivot_wider(id_cols = playerid, names_from = position, values_from = position) %>% 
+  unite("position", one_of(all_positions), na.rm = TRUE, sep = ", ") %>% 
+  distinct() 
+
+#grab the plate appearances for the depth charts projections
+at_bats <- filter(aggregated, proj=="depthcharts") %>%
+  mutate(depthpa = PA) %>%
+  select(playerid, depthpa) %>% 
+  distinct()
+
+
+#remove duplicate projections
+mean_hitter_proj <- aggregated %>% 
+  filter(proj != "depthcharts") %>% 
+  select(playerid, proj, AB, PA, AVG, OBP, HR_pa:SB_pa) %>% 
+  distinct() 
+
+#average across projection systems
+mean_hitter_proj <- mean_hitter_proj %>% 
+  group_by(playerid) %>%
+  summarise(AB = mean(AB, na.rm = TRUE),
+            PA = mean(PA),
+            R_ab = mean(R_pa),
+            HR_ab = mean(HR_pa),
+            RBI_ab = mean(RBI_pa),
+            SB_ab = mean(SB_pa),
+            AVG = mean(AVG),
+            OBP = mean(OBP)) %>% 
+  
+    #merge in the PA projections
+    left_join(at_bats)  %>% 
+  
+    #use depth charts PA if available
+    mutate(PA = ifelse(is.na(depthpa), PA, depthpa)) %>%
+  
+    #multiply rate based projections by PA
+    mutate(R = R_ab*PA, 
+           HR = HR_ab*PA,
+           RBI = RBI_ab*PA,
+           SB = SB_ab*PA) %>%
+    select(playerid, PA, AB, R, HR, RBI, SB, AVG, OBP)
+
+
+#vector of replacement level values
+nopos_replacement <- replacement_hitter %>% 
+  rename(r_repl = R, hr_repl = HR, rbi_repl = RBI, sb_repl = SB, avg_repl = AVG) 
+  
+
+#final vector of hitter projections.
+hitter_projections <- names %>% 
+  left_join(positions) %>% 
+  left_join(mean_hitter_proj) %>% 
+  mutate(r_repl  = pull(nopos_replacement, r_repl),
+         hr_repl = pull(nopos_replacement, hr_repl),
+         rbi_repl = pull(nopos_replacement, rbi_repl),
+         sb_repl = pull(nopos_replacement, sb_repl),
+         avg_repl = pull(nopos_replacement, avg_repl))
+
+#adjust replacement level average upwards
+if (CURRENT_YEAR == 2021) {
+  hitter_projections <- hitter_projections %>% mutate(avg_repl = .235)
+}
+
+#convert coefficients frame to a normal data frame
+coefs_for_calc <- as.numeric(coefs$estimate)
+names(coefs_for_calc) <- coefs$Category
+
+#calculate marginal runs and marginal points.
+hitter_projections <- hitter_projections %>% 
+ mutate(marginal_hr = HR - hr_repl, 
+        marginal_runs = R - r_repl,
+        marginal_rbi = RBI - rbi_repl,
+        marginal_sb = SB - sb_repl,
+        marginal_avg = AVG - avg_repl,
+        marginal_runs_points = marginal_runs * coefs_for_calc[["r"]],
+        marginal_hr_points = marginal_hr * coefs_for_calc[["hr"]],
+        marginal_rbi_points = marginal_rbi * coefs_for_calc[["rbi"]],
+        marginal_sb_points = marginal_sb * coefs_for_calc[["sb"]],
+        marginal_avg_points = marginal_avg * coefs_for_calc[["avg"]]/15,
+        marginal_total_points = (marginal_runs_points +
+                                   marginal_hr_points +
+                                   marginal_rbi_points +
+                                   marginal_avg_points +
+                                   marginal_sb_points),
+        #total of 4680 dollars exist in the league. 1700 marginal points exist. Therefore, marginal
+        #point is worth 4680/1700
+        dollar_value = marginal_total_points*(4680/1700)) %>% 
+  filter(PA > 1) %>% 
+  arrange(-dollar_value)
+
+#########################################################################
+################# CALIBRATE PROJECTIONS TO MATCH ROSTERS################# 
+#########################################################################
+
+#calculate number of positive players at given_position
+positive_hitters <- function(pos=NA) {
+  if (is.na(pos)) {
+    hitter_projections %>% 
+      filter(dollar_value > 1) %>% 
+      nrow()
+  } else{
+    hitter_projections %>% 
+      filter(str_detect(position, pos) & dollar_value >= 1) %>% 
+      nrow()
+  }
+}
+
+#first, adjust total number of positive players downward
+while(positive_hitters() > 270) {
+  hitter_projections <- hitter_projections %>% 
+    mutate(dollar_value = dollar_value - .1)
+}
+
+#function to adjust up pool by position
+adjust_position <- function(adj_position, min) {
+  cumulative_adjustment <- 0
+  
+  while(positive_hitters(adj_position) < min) {
+
+    #adjust up projections
+    hitter_projections <<- hitter_projections %>% 
+      mutate(dollar_value = dollar_value + .2)
+    
+    cumulative_adjustment <- cumulative_adjustment + .2
+  }
+  print(paste0(adj_position, " Positional_adjustment: ", cumulative_adjustment))
+}
+
+#adjust each position upward as needed to hit minimum number of players at each
+adjust_position("catcher", 36)
+adjust_position("of", 108)
+walk(c("1b","2b","ss", "3b"), adjust_position, min = 27) #31 = 18 at position, 9 at CI/MI
+
+
+################################################################
+################PITCHER STUFF LIVES HERE########################
+################################################################
+
+#read in the list of pitcher projections and set list item names
+pitcher_proj <- map_chr(PROJECTIONS, function(x) paste("./", x, "/pitchers.csv", sep="")) 
+names(pitcher_proj) <- PROJECTIONS
+
+
+pitcher_proj <- pitcher_proj %>% 
+  map(function(x) {
+    if (file.exists(x)) read_csv(x) %>% mutate(proj=x)
+  }) 
+
+#mutate zips data frame to deal with missing saves
+if (!is.null(pitcher_proj[["zips"]])) {
+  pitcher_proj[["zips"]] <- mutate(pitcher_proj[["zips"]], SV = NA)
+} 
+
+
+pitcher_proj <- pitcher_proj %>% 
+      keep(function(x) !is.null(x)) %>%
+      map(select, Name, playerid, Team, IP, ERA, WHIP, SO, SV, W, proj) %>% 
+      map(rename, K = SO) %>% 
+      map(mutate, proj = str_remove(proj, "./"),
+                  proj = str_remove(proj, "/pitchers.csv"),
+                  playerid = as.character(playerid)) %>% 
+  bind_rows()
+
+  
+####################################
+############   PECOTA   ############
+####################################
+if (file.exists("./pecota/pecota2020_pitching_feb06.xlsx")) {
+  #read in PECOTA data and rename variables to line up
+  pecotapitch <- read_xlsx("./pecota/pecota2020_pitching_feb06.xlsx") %>% 
+    rename(Name = name, K = so, BPID = bpid, IP=ip, ERA = era, WHIP = whip, SV = sv, W = w) %>% 
+    select(Name, BPID, IP, ERA, WHIP, K, SV, W) %>% 
+    mutate(Team = "pecotaflag",
+           proj = "pecota") 
+  
+  pecotapitch <- left_join(pecotapitch, crosswalk) %>% 
+    select(-BPID) %>% 
+    filter(!is.na(playerid)) 
+  
+  pitcher_proj[["pecota"]] <- pecotapitch
+}
+
+
+#group pecota with other projections 
+if (exists("pecotapitch")) {
+  pitcher_proj <- bind_rows(pitcher_proj, pecotapitch)  
+}
+
+
+#get vector of innings pitched
+innings <- filter(pitcher_proj, proj=="depthcharts") %>%
+      mutate(depthip = IP) %>%
+      select(Name, Team, playerid, depthip)
+
+#spread per ip numbers across depth charts IP
+pitcher_proj <- mutate(pitcher_proj,
+                       K_IP = K/IP,
+                       SV_IP = SV/IP,
+                       W_IP = W/IP) %>%
+      group_by(playerid) %>%
+      summarise(ERA = mean(ERA),
+                WHIP = mean(WHIP),
+                K_IP = mean(K/IP),
+                SV_IP = mean(SV/IP, na.rm=TRUE),
+                W_IP = mean(W/IP))
+
+pitcher_proj <- left_join(innings, pitcher_proj) %>%
+      mutate(IP = depthip,
+             ERA = round(ERA, 2),
+             WHIP = round(WHIP, 2),
+             K = round(K_IP*IP, 0),
+             SV = round(SV_IP*IP, 0),
+             W = round(W_IP*IP, 0), 
+             position = "pitcher") %>%
+      select(Name, Team, IP, W, ERA, SV, K, WHIP, playerid, position)
+
+
+
+#calculate marginal values and points
+pitcher_projections <- pitcher_proj %>%
+      mutate(era_repl = pull(replacement_pitcher, ERA),
+             whip_repl = pull(replacement_pitcher, WHIP),
+             k_repl = pull(replacement_pitcher, SO),
+             win_repl = pull(replacement_pitcher, W),
+             sv_repl = pull(replacement_pitcher, SV),
+             marginal_ERA = ERA - era_repl,
+             marginal_WHIP = WHIP - whip_repl,
+             marginal_W = W - win_repl,
+             marginal_SV = SV - sv_repl,
+             marginal_K = K - k_repl,
+             ERA_points = (marginal_ERA *coefs_for_calc[["era"]])*(IP/1217), #average top 270 pitcher in 2020 pitched 45 innings
+             WHIP_points = (marginal_WHIP*coefs_for_calc[["whip"]])*(IP/1217), #45 prorates to 121.7 over a 162-game
+             W_points = marginal_W*coefs_for_calc[["w"]],
+             SV_points = marginal_SV*coefs_for_calc[["sv"]],
+             K_points = marginal_K*coefs_for_calc[["k"]],
+             marginal_total_points =  ERA_points + WHIP_points + W_points + SV_points + K_points,
+             dollar_value = marginal_total_points*(4680/1700)
+      ) %>% 
+      #sort by dollar value
+      arrange(desc(dollar_value)) %>%
+      
+      #select relevant columns
+      select(Name,Team,position,playerid,IP,ERA,WHIP,SV,W,K,marginal_total_points,dollar_value) %>%
+      
+      #round points and dollars columns
+      mutate(marginal_total_points = round(marginal_total_points, 2), dollar_value = round(dollar_value, 2)) %>%
+      
+      #select only pithcers with at least 1 IP
+      filter(IP > 1)
+
+#########################################################################
+############# CALIBRATE PROJECTIONS TO MATCH ROSTER SIZES ############### 
+#########################################################################
+
+#calculate number of positive players at given_position
+positive_pitchers <- function() {
+  pitcher_projections %>% 
+  filter(dollar_value > 1) %>% 
+  nrow()
+}
+positive_pitchers() 
+
+pitcher_adjustment <- 0
+
+while (positive_pitchers() < 180) {
+  pitcher_projections <- pitcher_projections %>% 
+    mutate(dollar_value = dollar_value + .25)
+  
+  pitcher_adjustment <- pitcher_adjustment + .25
+}
+
+print(paste0("Pitcher Pitcher Adjustment: ", pitcher_adjustment))
+positive_pitchers() 
+
+save(hitter_projections, pitcher_projections, file = "projections.rda")
+
+
