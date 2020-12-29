@@ -17,7 +17,10 @@ view_team("pasadena") %>%
 
 #hitter and pitcher projections
 write_csv(pitcher_projections, path = "./results/pitcher_projections.csv")
-write_csv(hitter_projections, path = "./results/hitter_projections.csv")
+
+hitter_projections %>% 
+  select(playerid, Name, Team, position, PA, AB, R, HR, RBI, SB, AVG, marginal_total_points, dollar_value, status) %>% 
+  write_csv(path = "./results/hitter_projections.csv")
 
 
 #create file for best remaining players
