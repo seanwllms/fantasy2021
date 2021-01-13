@@ -47,3 +47,5 @@ sean_values <- bind_cols(adp_analysis, reg_estimate=sean_vs_adp$fitted.values) %
   mutate(sean_value = dollar_value - reg_estimate) %>% 
   filter(!(status=="drafted")) %>% 
   arrange(-sean_value)
+
+write_csv(sean_values, path="./adp_analysis/sean_targets.csv")

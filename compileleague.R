@@ -34,6 +34,9 @@ source("mergeinprojections.R")
 #calculate standings
 source("calculatestandings.R")
 
+#calculate league statistics
+source("calc_league_stats.R")
+
 #write to .csv
 source("csvwriter.R")
 

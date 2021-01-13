@@ -14,6 +14,8 @@ view_team("marmaduke") %>%
 view_team("pasadena") %>% 
   write_csv("./results/pasadena.csv")
 
+#write roster csv to shiny folder
+write_csv(rosters_merged, path="./shiny_fantasy/rosters.csv")
 
 #hitter and pitcher projections
 write_csv(pitcher_projections, path = "./results/pitcher_projections.csv")
@@ -32,7 +34,6 @@ hitterpitcher <- filter(hitterpitcher, status != "drafted" & dollar_value > -5)
 
 write.csv(hitterpitcher, "./results/bestremaining.csv")
 
-
 #write out draft errors to csv
 write.csv(drafterrors, "./results/drafterrors.csv")
 
@@ -46,3 +47,6 @@ standings.output <- select(standings,
 
 write.csv(standings.output, file="./results/standings.csv")
 
+#copy files needed for shiny app
+files_to_copy <- c("./results/standings.csv", "./results/pitcher_projections.csv", "./results/hitter_projections.csv") 
+walk(files_to_copy, file.copy, "./shiny_fantasy/", overwrite = TRUE)

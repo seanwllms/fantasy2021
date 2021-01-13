@@ -170,10 +170,6 @@ hitter_projections <- names %>%
          sb_repl = pull(nopos_replacement, sb_repl),
          avg_repl = pull(nopos_replacement, avg_repl))
 
-#adjust replacement level average upwards
-if (CURRENT_YEAR == 2021) {
-  hitter_projections <- hitter_projections %>% mutate(avg_repl = .235)
-}
 
 #convert coefficients frame to a normal data frame
 coefs_for_calc <- as.numeric(coefs$estimate)
@@ -202,6 +198,18 @@ hitter_projections <- hitter_projections %>%
   filter(PA > 1) %>% 
   arrange(-dollar_value)
 
+
+#do some pitcher diagnostics on how well calibrated replacement values are 
+hitter_diagnostics <- hitter_projections %>% 
+  arrange(-dollar_value) %>% 
+  filter(row_number() < 271) %>% 
+  summarise(marginal_r_points = sum(marginal_runs_points),
+            marginal_hr_points = sum(marginal_hr_points),
+            marginal_rbi_points = sum(marginal_rbi_points),
+            marginal_avg_points = sum(marginal_avg_points),
+            marginal_sb_points = sum(marginal_sb_points))
+
+hitter_diagnostics
 #########################################################################
 ################# CALIBRATE PROJECTIONS TO MATCH ROSTERS################# 
 #########################################################################
@@ -334,7 +342,7 @@ pitcher_proj <- left_join(innings, pitcher_proj) %>%
 pitcher_projections <- pitcher_proj %>%
       mutate(era_repl = pull(replacement_pitcher, ERA),
              whip_repl = pull(replacement_pitcher, WHIP),
-             k_repl = pull(replacement_pitcher, SO),
+             k_repl = pull(replacement_pitcher, K),
              win_repl = pull(replacement_pitcher, W),
              sv_repl = pull(replacement_pitcher, SV),
              marginal_ERA = ERA - era_repl,
@@ -349,7 +357,23 @@ pitcher_projections <- pitcher_proj %>%
              K_points = marginal_K*coefs_for_calc[["k"]],
              marginal_total_points =  ERA_points + WHIP_points + W_points + SV_points + K_points,
              dollar_value = marginal_total_points*(4680/1700)
-      ) %>% 
+      )
+
+
+#do some pitcher diagnostics on how well calibrated replacement values are 
+pitcher_diagnostics <- pitcher_projections %>% 
+  arrange(-dollar_value) %>% 
+  filter(row_number() < 181) %>% 
+  summarise(marginal_era_points = sum(ERA_points),
+            marginal_whip_points = sum(WHIP_points),
+            marginal_k_points = sum(K_points),
+            marginal_sv_points = sum(SV_points),
+            marginal_w_points = sum(W_points))
+  
+  
+pitcher_diagnostics
+
+pitcher_projections <- pitcher_projections %>% 
       #sort by dollar value
       arrange(desc(dollar_value)) %>%
       
@@ -383,7 +407,14 @@ while (positive_pitchers() < 180) {
   pitcher_adjustment <- pitcher_adjustment + .25
 }
 
-print(paste0("Pitcher Pitcher Adjustment: ", pitcher_adjustment))
+while (positive_pitchers() > 181) {
+  pitcher_projections <- pitcher_projections %>% 
+    mutate(dollar_value = dollar_value - .25)
+  
+  pitcher_adjustment <- pitcher_adjustment - .25
+}
+
+print(paste0("Pitcher Adjustment: ", pitcher_adjustment))
 positive_pitchers() 
 
 save(hitter_projections, pitcher_projections, file = "projections.rda")
