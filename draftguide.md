@@ -5,103 +5,96 @@ Fantasy 2021
 
 #### Draft Status
 
-| position    |  remaining|   max|   avg|
-|:------------|----------:|-----:|-----:|
-| 1b          |         20|  23.2|  12.4|
-| 1b, 2b      |          1|   3.8|   3.8|
-| 1b, 3b      |          2|  14.3|  12.7|
-| 1b, catcher |          1|   1.1|   1.1|
-| 1b, dh      |          5|  12.7|   8.1|
-| 1b, of      |          5|  16.9|  11.1|
-| 2b          |         16|  22.1|   9.5|
-| 2b, 3b      |          7|  17.5|   8.8|
-| 2b, 3b, ss  |          1|   4.3|   4.3|
-| 2b, of      |          6|  14.3|   6.8|
-| 2b, ss      |          9|  24.1|  12.3|
-| 3b          |         17|  20.6|  11.6|
-| 3b, catcher |          1|  14.2|  14.2|
-| 3b, dh      |          1|  12.3|  12.3|
-| 3b, dh, of  |          1|   2.5|   2.5|
-| 3b, of      |          3|  17.4|  16.3|
-| 3b, ss      |          1|   5.9|   5.9|
-| catcher     |         29|  13.1|   5.2|
-| dh          |          2|  19.5|  17.8|
-| dh, of      |          7|  23.6|  10.8|
-| of          |         82|  27.4|  10.4|
-| of, ss      |          3|  17.8|  14.6|
-| ss          |         19|  19.7|  12.9|
-| pitcher     |        121|  23.7|   6.4|
+| position |  remaining|   max|   avg|
+|:---------|----------:|-----:|-----:|
+| 1b       |         10|  14.4|   8.3|
+| 1b, 3b   |          1|   5.5|   5.5|
+| 1b, dh   |          2|   4.4|   3.0|
+| 1b, of   |          4|  13.2|   7.5|
+| 2b       |          8|   8.9|   5.8|
+| 2b, 3b   |          3|  14.6|   7.5|
+| 2b, of   |          2|   7.5|   4.8|
+| 2b, ss   |          6|  15.2|   7.1|
+| 3b       |          7|  14.2|   6.8|
+| 3b, dh   |          1|   6.3|   6.3|
+| catcher  |         26|  12.8|   5.6|
+| dh       |          2|  15.6|  14.2|
+| dh, of   |          2|  17.6|  11.7|
+| of       |         48|  17.6|   7.2|
+| of, ss   |          3|  12.3|   9.8|
+| ss       |         17|  17.0|   7.8|
+| pitcher  |        106|  14.7|   5.7|
 
 | name  |  value|
 |:------|------:|
-| 1B    |      6|
-| 2B    |      6|
-| 3B    |      9|
-| CI    |     16|
-| DH    |     14|
+| 1B    |      4|
+| 2B    |      5|
+| 3B    |      4|
+| CI    |     14|
+| DH    |     13|
 | MI    |     16|
-| SS    |      7|
-| C     |     28|
-| OF    |     58|
-| P     |    116|
-| Total |    276|
+| SS    |      5|
+| C     |     25|
+| OF    |     51|
+| P     |    102|
+| Total |    239|
 
 #### Current Standings
 
 | team       |  total\_points|  hit\_points|  pitch\_points|
 |:-----------|--------------:|------------:|--------------:|
-| rippe      |          102.3|         45.6|           56.7|
-| sturgeon   |          101.3|         61.3|           40.0|
-| ds9        |           90.5|         41.5|           49.0|
-| chicago    |           83.7|         28.8|           54.9|
-| bellevegas |           78.8|         43.7|           35.1|
-| pkdodgers  |           78.2|         29.3|           48.9|
-| ottawa     |           75.1|         25.2|           49.9|
-| bears      |           74.4|         37.6|           36.8|
-| isotopes   |           72.2|         26.4|           45.8|
-| pasadena   |           70.4|         20.0|           50.4|
-| deano      |           68.4|         35.3|           33.1|
-| marmaduke  |           65.4|         20.0|           45.4|
-| perpetual  |           61.0|         20.6|           40.4|
-| deener     |           59.4|         22.3|           37.1|
-| dsb        |           51.1|         17.3|           33.8|
-| drjames    |           50.5|          7.0|           43.5|
-| dembums    |           49.7|         13.3|           36.4|
-| balco      |           49.1|         12.6|           36.5|
+| rippe      |          115.2|         69.4|           45.8|
+| chicago    |          110.6|         68.9|           41.7|
+| ds9        |          109.4|         66.8|           42.6|
+| isotopes   |          106.5|         76.1|           30.4|
+| sturgeon   |           96.9|         78.3|           18.6|
+| bellevegas |           95.5|         71.1|           24.4|
+| ottawa     |           94.4|         54.9|           39.5|
+| pasadena   |           89.1|         48.1|           41.0|
+| deano      |           84.8|         53.6|           31.2|
+| marmaduke  |           79.8|         44.9|           34.9|
+| pkdodgers  |           76.8|         45.0|           31.8|
+| dsb        |           76.6|         41.3|           35.3|
+| bears      |           76.0|         62.9|           13.1|
+| lacugna    |           74.7|         33.6|           41.1|
+| deener     |           70.5|         46.4|           24.1|
+| dembums    |           69.1|         45.8|           23.3|
+| perpetual  |           65.2|         38.7|           26.5|
+| balco      |           63.0|         40.4|           22.6|
 
 #### Top Remaining Pitchers
 
-| Name            | Team      |   IP|   ERA|  WHIP|    K|   SV|    W|   pts|    dlr|
-|:----------------|:----------|----:|-----:|-----:|----:|----:|----:|-----:|------:|
-| Edwin Diaz      | Mets      |   63|  3.02|  1.10|   93|   31|    4|  6.61|  23.69|
-| Aroldis Chapman | Yankees   |   63|  3.13|  1.16|   92|   31|    4|  6.30|  22.84|
-| Max Scherzer    | Nationals |  189|  3.52|  1.11|  236|    0|   13|  6.24|  22.67|
-| Craig Kimbrel   | Cubs      |   63|  3.59|  1.22|   89|   32|    3|  5.69|  21.15|
-| Matt Barnes     | Red Sox   |   63|  3.68|  1.30|   81|   32|    4|  5.42|  20.43|
-| Raisel Iglesias | Angels    |   63|  3.72|  1.19|   73|   30|    3|  4.92|  19.05|
-| Blake Snell     | Rays      |  166|  3.47|  1.20|  204|    0|   12|  4.27|  17.24|
-| Tanner Rainey   | Nationals |   63|  3.86|  1.40|   80|   28|    3|  3.80|  15.96|
-| Hector Neris    | Phillies  |   63|  4.26|  1.32|   71|   28|    3|  3.66|  15.58|
-| Rafael Montero  | Mariners  |   63|  3.98|  1.26|   70|   25|    3|  3.38|  14.81|
-| Jordan Romano   | Blue Jays |   63|  4.13|  1.29|   69|   26|    3|  3.37|  14.79|
-| Drew Pomeranz   | Padres    |   63|  3.60|  1.25|   76|   23|    3|  3.34|  14.71|
-| Yimi Garcia     | Marlins   |   63|  4.33|  1.29|   63|   26|    3|  3.12|  14.09|
-| Jose Leclerc    | Rangers   |   60|  3.86|  1.30|   78|   23|    3|  3.09|  14.00|
-| Chris Sale      | Red Sox   |  112|  3.34|  1.07|  146|    0|    9|  3.04|  13.86|
+| Name              | Team      |   IP|   ERA|  WHIP|    K|   SV|    W|   pts|    dlr|
+|:------------------|:----------|----:|-----:|-----:|----:|----:|----:|-----:|------:|
+| James Paxton      | NA        |  169|  4.13|  1.26|  178|    0|   11|  5.56|  14.70|
+| Andrew Heaney     | Angels    |  172|  4.27|  1.25|  178|    0|   11|  5.50|  14.54|
+| Nathan Eovaldi    | Red Sox   |  171|  4.24|  1.29|  176|    0|   11|  5.07|  13.41|
+| Chris Sale        | Red Sox   |  112|  3.37|  1.08|  148|    0|    8|  5.07|  13.39|
+| Craig Kimbrel     | Cubs      |   63|  3.61|  1.21|   87|   21|    3|  4.47|  11.79|
+| Jordan Montgomery | Yankees   |  166|  4.40|  1.30|  164|    0|   11|  4.39|  11.60|
+| Jake Odorizzi     | NA        |  160|  4.42|  1.29|  170|    0|   10|  4.26|  11.24|
+| Drew Smyly        | Braves    |  152|  4.37|  1.30|  174|    0|   10|  4.24|  11.19|
+| Matthew Boyd      | Tigers    |  172|  4.53|  1.28|  176|    0|    9|  4.20|  11.08|
+| Eduardo Rodriguez | Red Sox   |  152|  4.22|  1.32|  158|    0|   10|  3.88|  10.23|
+| Matt Barnes       | Red Sox   |   63|  3.79|  1.31|   81|   21|    3|  3.85|  10.15|
+| Seth Lugo         | Mets      |  144|  4.15|  1.27|  149|    0|    9|  3.81|  10.06|
+| Sean Manaea       | Athletics |  158|  4.23|  1.28|  136|    0|   10|  3.79|   9.98|
+| Adrian Morejon    | Padres    |  140|  3.95|  1.30|  148|    0|    9|  3.73|   9.82|
+| Yusei Kikuchi     | Mariners  |  167|  4.26|  1.32|  153|    0|    9|  3.59|   9.47|
 
 #### Top Remaining Hitters
 
 <table>
 <colgroup>
-<col width="18%" />
+<col width="17%" />
 <col width="10%" />
 <col width="4%" />
 <col width="9%" />
 <col width="9%" />
-<col width="10%" />
-<col width="10%" />
-<col width="6%" />
 <col width="9%" />
+<col width="11%" />
+<col width="10%" />
+<col width="10%" />
 <col width="9%" />
 </colgroup>
 <thead>
@@ -120,184 +113,184 @@ Fantasy 2021
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Byron Buxton</td>
-<td align="left">Twins</td>
-<td align="right">588</td>
-<td align="right">81.94350</td>
-<td align="right">28.79096</td>
-<td align="right">86.37288</td>
-<td align="right">21.039548</td>
-<td align="right">0.266</td>
-<td align="right">9.519436</td>
-<td align="right">27.40645</td>
-</tr>
-<tr class="even">
-<td align="left">Javier Baez</td>
-<td align="left">Cubs</td>
-<td align="right">665</td>
-<td align="right">82.35294</td>
-<td align="right">30.88235</td>
-<td align="right">98.82353</td>
-<td align="right">12.352941</td>
-<td align="right">0.256</td>
-<td align="right">8.328091</td>
-<td align="right">24.12674</td>
-</tr>
-<tr class="odd">
-<td align="left">J.D. Martinez</td>
-<td align="left">Red Sox</td>
-<td align="right">658</td>
-<td align="right">95.01075</td>
-<td align="right">35.37634</td>
-<td align="right">107.13978</td>
-<td align="right">3.032258</td>
-<td align="right">0.277</td>
-<td align="right">8.145980</td>
-<td align="right">23.62540</td>
-</tr>
-<tr class="even">
 <td align="left">Giancarlo Stanton</td>
 <td align="left">Yankees</td>
 <td align="right">595</td>
-<td align="right">90.05952</td>
-<td align="right">41.48810</td>
-<td align="right">104.22619</td>
-<td align="right">4.047619</td>
-<td align="right">0.252</td>
-<td align="right">8.039967</td>
-<td align="right">23.33356</td>
-</tr>
-<tr class="odd">
-<td align="left">Anthony Rizzo</td>
-<td align="left">Cubs</td>
-<td align="right">679</td>
-<td align="right">98.31674</td>
-<td align="right">31.74811</td>
-<td align="right">96.26848</td>
-<td align="right">6.144796</td>
-<td align="right">0.270</td>
-<td align="right">7.995265</td>
-<td align="right">23.21049</td>
-</tr>
-<tr class="even">
-<td align="left">Jose Altuve</td>
-<td align="left">Astros</td>
-<td align="right">665</td>
-<td align="right">92.88262</td>
-<td align="right">22.72660</td>
-<td align="right">81.02526</td>
-<td align="right">10.869242</td>
-<td align="right">0.280</td>
-<td align="right">7.585525</td>
-<td align="right">22.08251</td>
-</tr>
-<tr class="odd">
-<td align="left">Jose Abreu</td>
-<td align="left">White Sox</td>
-<td align="right">665</td>
-<td align="right">88.93617</td>
-<td align="right">33.35106</td>
-<td align="right">104.09574</td>
-<td align="right">2.021277</td>
-<td align="right">0.272</td>
-<td align="right">7.356611</td>
-<td align="right">21.45232</td>
+<td align="right">88.27671</td>
+<td align="right">38.75785</td>
+<td align="right">95.05775</td>
+<td align="right">3.3732508</td>
+<td align="right">0.2536667</td>
+<td align="right">5.1603729</td>
+<td align="right">17.61613</td>
 </tr>
 <tr class="even">
 <td align="left">Tommy Pham</td>
 <td align="left">Padres</td>
 <td align="right">581</td>
-<td align="right">81.57877</td>
-<td align="right">21.88699</td>
-<td align="right">72.62500</td>
-<td align="right">14.922945</td>
-<td align="right">0.267</td>
-<td align="right">7.296092</td>
-<td align="right">21.28571</td>
-</tr>
-<tr class="odd">
-<td align="left">Anthony Rendon</td>
-<td align="left">Angels</td>
-<td align="right">665</td>
-<td align="right">93.26220</td>
-<td align="right">27.37043</td>
-<td align="right">97.31707</td>
-<td align="right">3.041158</td>
-<td align="right">0.277</td>
-<td align="right">7.055843</td>
-<td align="right">20.62432</td>
-</tr>
-<tr class="even">
-<td align="left">Joey Gallo</td>
-<td align="left">Rangers</td>
-<td align="right">644</td>
-<td align="right">86.34069</td>
-<td align="right">39.61514</td>
-<td align="right">96.49842</td>
-<td align="right">6.094637</td>
-<td align="right">0.210</td>
-<td align="right">6.970648</td>
-<td align="right">20.38978</td>
+<td align="right">81.97405</td>
+<td align="right">20.28841</td>
+<td align="right">69.49862</td>
+<td align="right">16.0569988</td>
+<td align="right">0.2683333</td>
+<td align="right">5.1430213</td>
+<td align="right">17.55689</td>
 </tr>
 <tr class="odd">
 <td align="left">Marcus Semien</td>
 <td align="left">NA</td>
 <td align="right">672</td>
-<td align="right">91.94760</td>
-<td align="right">23.47598</td>
-<td align="right">72.38428</td>
-<td align="right">10.759825</td>
-<td align="right">0.253</td>
-<td align="right">6.708871</td>
-<td align="right">19.66913</td>
+<td align="right">90.52017</td>
+<td align="right">25.02963</td>
+<td align="right">78.49368</td>
+<td align="right">11.1565009</td>
+<td align="right">0.2556667</td>
+<td align="right">4.9853945</td>
+<td align="right">17.01880</td>
 </tr>
 <tr class="even">
 <td align="left">Shohei Ohtani</td>
 <td align="left">Angels</td>
 <td align="right">504</td>
-<td align="right">68.68136</td>
-<td align="right">24.24048</td>
-<td align="right">74.74148</td>
-<td align="right">13.130261</td>
-<td align="right">0.260</td>
-<td align="right">6.634085</td>
-<td align="right">19.46324</td>
+<td align="right">73.54179</td>
+<td align="right">23.30776</td>
+<td align="right">69.27249</td>
+<td align="right">13.6457280</td>
+<td align="right">0.2653333</td>
+<td align="right">4.5746606</td>
+<td align="right">15.61666</td>
+</tr>
+<tr class="odd">
+<td align="left">Jean Segura</td>
+<td align="left">Phillies</td>
+<td align="right">637</td>
+<td align="right">78.41471</td>
+<td align="right">17.13287</td>
+<td align="right">74.00925</td>
+<td align="right">12.3473818</td>
+<td align="right">0.2796667</td>
+<td align="right">4.4631186</td>
+<td align="right">15.23589</td>
+</tr>
+<tr class="even">
+<td align="left">Yoan Moncada</td>
+<td align="left">White Sox</td>
+<td align="right">637</td>
+<td align="right">85.99628</td>
+<td align="right">24.81335</td>
+<td align="right">78.72359</td>
+<td align="right">8.6100731</td>
+<td align="right">0.2530000</td>
+<td align="right">4.2830649</td>
+<td align="right">14.62123</td>
 </tr>
 <tr class="odd">
 <td align="left">Paul Goldschmidt</td>
 <td align="left">Cardinals</td>
 <td align="right">658</td>
-<td align="right">86.47432</td>
-<td align="right">27.83082</td>
-<td align="right">88.46224</td>
-<td align="right">3.975831</td>
-<td align="right">0.265</td>
-<td align="right">6.452241</td>
-<td align="right">18.96264</td>
+<td align="right">87.54643</td>
+<td align="right">26.73473</td>
+<td align="right">85.02102</td>
+<td align="right">4.4994207</td>
+<td align="right">0.2660000</td>
+<td align="right">4.2316418</td>
+<td align="right">14.44569</td>
 </tr>
 <tr class="even">
-<td align="left">Josh Donaldson</td>
-<td align="left">Twins</td>
-<td align="right">602</td>
-<td align="right">89.55372</td>
-<td align="right">30.84628</td>
-<td align="right">88.55868</td>
-<td align="right">2.985124</td>
-<td align="right">0.253</td>
-<td align="right">6.377680</td>
-<td align="right">18.75738</td>
-</tr>
-<tr class="odd">
 <td align="left">Tommy Edman</td>
 <td align="left">Cardinals</td>
 <td align="right">623</td>
-<td align="right">74.68139</td>
-<td align="right">14.73975</td>
-<td align="right">64.85489</td>
-<td align="right">15.722397</td>
-<td align="right">0.268</td>
-<td align="right">6.341851</td>
-<td align="right">18.65874</td>
+<td align="right">77.52382</td>
+<td align="right">15.05880</td>
+<td align="right">64.72637</td>
+<td align="right">15.0692979</td>
+<td align="right">0.2666667</td>
+<td align="right">4.1540245</td>
+<td align="right">14.18073</td>
+</tr>
+<tr class="odd">
+<td align="left">Jorge Polanco</td>
+<td align="left">Twins</td>
+<td align="right">651</td>
+<td align="right">84.14925</td>
+<td align="right">19.15373</td>
+<td align="right">75.26269</td>
+<td align="right">7.9149254</td>
+<td align="right">0.2723333</td>
+<td align="right">3.8936227</td>
+<td align="right">13.29178</td>
+</tr>
+<tr class="even">
+<td align="left">Lorenzo Cain</td>
+<td align="left">Brewers</td>
+<td align="right">623</td>
+<td align="right">76.45498</td>
+<td align="right">12.07467</td>
+<td align="right">59.51702</td>
+<td align="right">15.9602890</td>
+<td align="right">0.2686667</td>
+<td align="right">3.8843977</td>
+<td align="right">13.26029</td>
+</tr>
+<tr class="odd">
+<td align="left">Rhys Hoskins</td>
+<td align="left">Phillies</td>
+<td align="right">602</td>
+<td align="right">84.91521</td>
+<td align="right">32.02815</td>
+<td align="right">88.14812</td>
+<td align="right">2.9765165</td>
+<td align="right">0.2396667</td>
+<td align="right">3.8577438</td>
+<td align="right">13.16930</td>
+</tr>
+<tr class="even">
+<td align="left">Carlos Correa</td>
+<td align="left">Astros</td>
+<td align="right">665</td>
+<td align="right">85.21154</td>
+<td align="right">27.19612</td>
+<td align="right">90.00251</td>
+<td align="right">2.0391078</td>
+<td align="right">0.2606667</td>
+<td align="right">3.7984871</td>
+<td align="right">12.96702</td>
+</tr>
+<tr class="odd">
+<td align="left">Willson Contreras</td>
+<td align="left">Cubs</td>
+<td align="right">463</td>
+<td align="right">59.28199</td>
+<td align="right">18.26729</td>
+<td align="right">59.39458</td>
+<td align="right">2.8961609</td>
+<td align="right">0.2546667</td>
+<td align="right">1.0472219</td>
+<td align="right">12.77493</td>
+</tr>
+<tr class="even">
+<td align="left">Nelson Cruz</td>
+<td align="left">NA</td>
+<td align="right">560</td>
+<td align="right">77.06478</td>
+<td align="right">33.55713</td>
+<td align="right">89.02945</td>
+<td align="right">0.9964664</td>
+<td align="right">0.2573333</td>
+<td align="right">3.7410218</td>
+<td align="right">12.77084</td>
+</tr>
+<tr class="odd">
+<td align="left">Alejandro Kirk</td>
+<td align="left">Blue Jays</td>
+<td align="right">461</td>
+<td align="right">58.53365</td>
+<td align="right">14.74413</td>
+<td align="right">56.86698</td>
+<td align="right">2.4428795</td>
+<td align="right">0.2743333</td>
+<td align="right">0.9613642</td>
+<td align="right">12.48184</td>
 </tr>
 </tbody>
 </table>
@@ -310,28 +303,28 @@ Fantasy 2021
 
 #### Best Draft Picks
 
-| team       | player                |  salary|  dollar\_value|    equity|
-|:-----------|:----------------------|-------:|--------------:|---------:|
-| marmaduke  | Adalberto Mondesi     |       9|       41.42599|  32.42599|
-| sturgeon   | Ronald Acuna Jr.      |       9|       38.39531|  29.39531|
-| ottawa     | Fernando Tatis Jr.    |       8|       37.24818|  29.24818|
-| ds9        | Luis Robert           |       1|       29.79743|  28.79743|
-| isotopes   | Trea Turner           |       5|       33.05489|  28.05489|
-| bellevegas | Randy Arozarena       |       0|       26.09271|  26.09271|
-| rippe      | Juan Soto             |       9|       32.84732|  23.84732|
-| chicago    | Kyle Tucker           |       5|       28.25678|  23.25678|
-| sturgeon   | Bo Bichette           |       7|       28.54880|  21.54880|
-| pkdodgers  | Cody Bellinger        |      12|       31.29779|  19.29779|
-| ds9        | Andres Gimenez        |       1|       19.66574|  18.66574|
-| sturgeon   | Trent Grisham         |       3|       21.59859|  18.59859|
-| bellevegas | Teoscar Hernandez     |       2|       20.47269|  18.47269|
-| bears      | Vladimir Guerrero Jr. |       5|       23.29329|  18.29329|
-| bears      | Nick Madrigal         |       5|       23.08752|  18.08752|
-| pasadena   | Victor Robles         |       5|       22.95417|  17.95417|
-| chicago    | Keston Hiura          |       5|       22.92254|  17.92254|
-| dembums    | Yordan Alvarez        |       5|       22.90844|  17.90844|
-| bellevegas | Eloy Jimenez          |       7|       24.67923|  17.67923|
-| chicago    | Ryan Pressly          |       3|       20.55000|  17.55000|
+| team       | player             |  salary|  dollar\_value|    equity|
+|:-----------|:-------------------|-------:|--------------:|---------:|
+| marmaduke  | Adalberto Mondesi  |       9|       39.92876|  30.92876|
+| isotopes   | Trea Turner        |       5|       35.16818|  30.16818|
+| sturgeon   | Ronald Acuna Jr.   |       9|       38.73571|  29.73571|
+| ottawa     | Fernando Tatis Jr. |       8|       36.80493|  28.80493|
+| ds9        | Luis Robert        |       1|       25.34893|  24.34893|
+| bellevegas | Randy Arozarena    |       0|       23.17447|  23.17447|
+| rippe      | Juan Soto          |       9|       30.79675|  21.79675|
+| chicago    | Kyle Tucker        |       5|       24.42049|  19.42049|
+| sturgeon   | Bo Bichette        |       7|       24.69232|  17.69232|
+| chicago    | Shane Bieber       |      17|       34.21000|  17.21000|
+| pkdodgers  | Cody Bellinger     |      12|       28.89514|  16.89514|
+| ottawa     | Dinelson Lamet     |       5|       21.79000|  16.79000|
+| rippe      | Trevor Story       |      17|       33.38932|  16.38932|
+| bellevegas | Teoscar Hernandez  |       2|       18.05884|  16.05884|
+| ottawa     | Jose Ramirez       |      17|       32.96624|  15.96624|
+| pasadena   | Victor Robles      |       5|       20.52689|  15.52689|
+| ds9        | Wil Myers          |       6|       20.90750|  14.90750|
+| ds9        | Andres Gimenez     |       1|       15.72978|  14.72978|
+| ds9        | Andres Gimenez     |       1|       15.72978|  14.72978|
+| chicago    | Keston Hiura       |       5|       19.53650|  14.53650|
 
 #### Unmatched Draft Picks
 
@@ -340,14 +333,13 @@ Fantasy 2021
 | CJ Abrams         | balco     | not matched |
 | Hunter Greene     | balco     | not matched |
 | Bobby Witt Jr.    | bears     | not matched |
-| Adley Rutschman   | bears     | not matched |
 | Oneil Cruz        | chicago   | not matched |
 | Vidal Brujan      | deano     | not matched |
 | Tristen Casas     | deano     | not matched |
 | Jonathan India    | deener    | not matched |
 | Spencer Torkelson | dembums   | not matched |
 | Kristian Robinson | ds9       | not matched |
-| Ha-seong Kim      | isotopes  | not matched |
 | Julio Rodriguez   | isotopes  | not matched |
 | Andrew Vaughn     | marmaduke | not matched |
 | Marco Luciano     | marmaduke | not matched |
+| Jasson Dominguez  | pasadena  | not matched |

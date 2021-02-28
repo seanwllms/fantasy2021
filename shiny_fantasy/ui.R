@@ -16,8 +16,10 @@ ui <- fluidPage(
                   value = "")
       ),
       #UI panel for roster tab
-      selectInput("teamselect", "Team", TEAMS, selected="marmaduke")
-      
+      conditionalPanel(
+        condition = "output.teamselect",
+        selectInput("teamselect", "Team", TEAMS, selected="marmaduke")
+      )
 
   ),
   # Show a plot of the generated distribution
@@ -25,12 +27,32 @@ ui <- fluidPage(
     tabsetPanel(
       id = "top_tabs",
       type = "tabs",
+      tabPanel("Dashboard",
+               br(),
+               fluidRow(
+                 column(6, htmlOutput("dollars_spent")),
+                 column(6, htmlOutput("dollars_remaining"))
+               ),
+               fluidRow(
+                 column(6, htmlOutput("value_remaining")),
+                 column(6, htmlOutput("players_left_to_auction"))
+               ),
+               fluidRow(
+                 column(6, htmlOutput("average_price")),
+                 column(6, htmlOutput("inflation"))
+               )
+      ),
+      
       tabPanel("Player Pool", 
                tableOutput("players")),
       tabPanel("Standings", 
                tableOutput("standings")),
       tabPanel("Rosters", 
-               tableOutput("rostertable"))
+               tableOutput("rostertable")),
+      tabPanel("Best Left, NFBC", 
+               tableOutput("nfbc_best")), 
+      tabPanel("Targets",
+               tableOutput("targets"))
     )
   )
 )

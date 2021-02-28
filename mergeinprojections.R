@@ -4,9 +4,11 @@ pitcher_positions <- c("P1","P2","P3","P4","P5","P6","P7","P8","P9","P10")
 
 
 hitters_for_merge <- hitter_projections %>% 
+  filter(!(playerid %in% DUPLICATE_PLAYERS_TO_EXCLUDE)) %>% 
   select(Name, AB, R, HR, RBI, SB, AVG, OBP, marginal_total_points, dollar_value)
 
 pitchers_for_merge <- pitcher_projections %>% 
+  filter(!(playerid %in% DUPLICATE_PLAYERS_TO_EXCLUDE)) %>% 
   select(Name, IP:K, marginal_total_points, dollar_value)
 
 
@@ -28,5 +30,8 @@ rosters_merged <- roster_draft %>%
          SV = ifelse(is.na(SV) & position %in% pitcher_positions, pull(replacement_pitcher, SV), SV),
          W = ifelse(is.na(W) & position %in% pitcher_positions, pull(replacement_pitcher, W), W),
          K = ifelse(is.na(K) & position %in% pitcher_positions, pull(replacement_pitcher, SO), K)) 
+
+
+
 
 

@@ -5,8 +5,8 @@ account: seanwllms
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3436368
-bundleId: 4089314
+bundleId: 4257579
 url: https://seanwllms.shinyapps.io/shiny_fantasy/
-when: 1610513762.99621
+when: 1614013812.50473
 asMultiple: FALSE
 asStatic: FALSE

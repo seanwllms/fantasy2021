@@ -3,6 +3,9 @@ library(tidyverse)
 ###Load the coefficients data frame
 load("coefs.rda")
 
+PITCHER_AUCTION_PERCENT = .35
+HITTER_AUCTION_PERCENT = .65
+
 ###############################################################
 ################HITTER STUFF LIVES HERE#########################
 ################################################################
@@ -61,10 +64,9 @@ names(hitter_data_frames) <- proj_systems
 ####################################
 #read in PECOTA data and rname variables to line up
 library(readxl)
-if (file.exists("./pecota/pecota2020_hitting_feb06.xlsx")) {
-  pecotahit<- read_xlsx("./pecota/pecota2020_hitting_feb06.xlsx") %>% 
-  select(name, bpid, team, pa, r, hr, rbi, sb, avg, oba) %>% 
-  mutate(Team = "pecotaflag")
+if (file.exists("./pecota/pecota2021_hitting_feb01.xlsx")) {
+  pecotahit<- read_xlsx("./pecota/pecota2021_hitting_feb01.xlsx", sheet = "50") %>% 
+  select(name, bpid, team, pa, ab, dc_fl, r, hr, rbi, sb, avg, obp)
 
   #crosswalk PECOTA to BP
   if (file.exists("./pecota/crosswalk.rda")) {
@@ -72,14 +74,16 @@ if (file.exists("./pecota/pecota2020_hitting_feb06.xlsx")) {
   } else {
     crosswalk <- read_csv(url("http://crunchtimebaseball.com/master.csv")) %>%
       rename(Name = fg_name, playerid=fg_id, bpid = bp_id) %>% 
-      select(Name, playerid, bpid)
+      select(playerid, bpid)
     save(crosswalk, file="./pecota/crosswalk.rda")
   }
   
   pecotahit <- left_join(pecotahit, crosswalk) %>% 
     select(-bpid) %>% 
-    rename(PA=pa, R=r, HR=hr, RBI=rbi, SB=sb, AVG = avg, OBP = oba) %>% 
-    mutate(HR_pa = HR/PA,
+    rename(AB=ab,PA=pa, R=r, HR=hr, RBI=rbi, SB=sb, AVG = avg, OBP = obp) %>% 
+    mutate(OBP = as.numeric(OBP),
+           AVG = as.numeric(AVG),
+           HR_pa = HR/PA,
            R_pa = R/PA,
            RBI_pa = RBI/PA,
            SB_pa = SB/PA,
@@ -96,14 +100,17 @@ aggregated <- bind_rows(hitter_data_frames)
 
 #merge all projections into data frame
 if (exists("pecotahit")) {
-  aggregated <- bind_rows(aggregated, pecotahit)
+  aggregated <- aggregated %>% 
+    mutate(dc_fl = TRUE) %>% 
+    bind_rows(pecotahit)
 }
 
 
 
 #get vector of player names and teams
-names <- aggregated %>% 
-  select(playerid, Name, Team) %>% 
+names <- aggregated %>%
+  filter(proj != "pecota") %>% 
+  select(playerid, Name) %>% 
   distinct()
 
 #get vector of eligible positions 
@@ -114,11 +121,14 @@ positions <- select(aggregated, playerid, position) %>%
   distinct() %>% 
   pivot_wider(id_cols = playerid, names_from = position, values_from = position) %>% 
   unite("position", one_of(all_positions), na.rm = TRUE, sep = ", ") %>% 
-  distinct() 
+  distinct() %>% 
+  select(-`NA`)
 
 #grab the plate appearances for the depth charts projections
-at_bats <- filter(aggregated, proj=="depthcharts") %>%
-  mutate(depthpa = PA) %>%
+at_bats <- filter(aggregated, proj=="depthcharts" | proj=="pecota") %>%
+  filter(dc_fl == TRUE) %>% 
+  group_by(playerid) %>% 
+  mutate(depthpa = mean(PA, na.rm=TRUE)) %>%
   select(playerid, depthpa) %>% 
   distinct()
 
@@ -152,7 +162,8 @@ mean_hitter_proj <- mean_hitter_proj %>%
            HR = HR_ab*PA,
            RBI = RBI_ab*PA,
            SB = SB_ab*PA) %>%
-    select(playerid, PA, AB, R, HR, RBI, SB, AVG, OBP)
+    select(playerid, PA, AB, R, HR, RBI, SB, AVG, OBP) %>% 
+   distinct()
 
 
 #vector of replacement level values
@@ -191,13 +202,35 @@ hitter_projections <- hitter_projections %>%
                                    marginal_hr_points +
                                    marginal_rbi_points +
                                    marginal_avg_points +
-                                   marginal_sb_points),
+                                   marginal_sb_points)
         #total of 4680 dollars exist in the league. 1700 marginal points exist. Therefore, marginal
         #point is worth 4680/1700
-        dollar_value = marginal_total_points*(4680/1700)) %>% 
+        #dollar_value = marginal_total_points*(4680/1700)
+        
+        ) %>% 
   filter(PA > 1) %>% 
-  arrange(-dollar_value)
+  arrange(-marginal_total_points)
 
+
+#add in team info 
+teams <- aggregated %>% 
+  filter(!proj=="pecota") %>% 
+  select(playerid, Team) %>%
+  distinct()
+
+hitter_projections <- hitter_projections %>% 
+  left_join(teams)
+
+#calculate dollar values
+total_hitter_points <- hitter_projections %>% 
+  filter(row_number() <= 270) %>% 
+  pull(marginal_total_points) %>% 
+  sum()
+
+#estimate cost to buy 1 hitter point
+hitter_cost_per_point <- (HITTER_AUCTION_PERCENT*4680)/total_hitter_points
+hitter_projections <- hitter_projections %>% 
+  mutate(dollar_value = marginal_total_points * hitter_cost_per_point)
 
 #do some pitcher diagnostics on how well calibrated replacement values are 
 hitter_diagnostics <- hitter_projections %>% 
@@ -210,6 +243,12 @@ hitter_diagnostics <- hitter_projections %>%
             marginal_sb_points = sum(marginal_sb_points))
 
 hitter_diagnostics
+
+total_hitter_value <- filter(hitter_projections, row_number() <=270) %>% 
+  pull(dollar_value) %>% 
+  sum()
+total_hitter_value
+
 #########################################################################
 ################# CALIBRATE PROJECTIONS TO MATCH ROSTERS################# 
 #########################################################################
@@ -241,7 +280,7 @@ adjust_position <- function(adj_position, min) {
 
     #adjust up projections
     hitter_projections <<- hitter_projections %>% 
-      mutate(dollar_value = dollar_value + .2)
+      mutate(dollar_value = ifelse(str_detect(position, adj_position), dollar_value + .2, dollar_value))
     
     cumulative_adjustment <- cumulative_adjustment + .2
   }
@@ -287,54 +326,86 @@ pitcher_proj <- pitcher_proj %>%
 ####################################
 ############   PECOTA   ############
 ####################################
-if (file.exists("./pecota/pecota2020_pitching_feb06.xlsx")) {
+if (file.exists("./pecota/pecota2021_pitching_feb01.xlsx")) {
   #read in PECOTA data and rename variables to line up
-  pecotapitch <- read_xlsx("./pecota/pecota2020_pitching_feb06.xlsx") %>% 
-    rename(Name = name, K = so, BPID = bpid, IP=ip, ERA = era, WHIP = whip, SV = sv, W = w) %>% 
-    select(Name, BPID, IP, ERA, WHIP, K, SV, W) %>% 
-    mutate(Team = "pecotaflag",
-           proj = "pecota") 
+  pecotapitch <- read_xlsx("./pecota/pecota2021_pitching_feb01.xlsx") %>% 
+    rename(Name = name, K = so, IP=ip, ERA = era, WHIP = whip, SV = sv, W = w) %>% 
+    select(bpid, IP, ERA, WHIP, K, SV, W, dc_fl) %>% 
+    mutate(proj = "pecota") 
   
   pecotapitch <- left_join(pecotapitch, crosswalk) %>% 
-    select(-BPID) %>% 
-    filter(!is.na(playerid)) 
-  
-  pitcher_proj[["pecota"]] <- pecotapitch
+    select(-bpid) %>% 
+    mutate(playerid = as.character(playerid),
+           WHIP = as.numeric(WHIP)) %>% 
+    filter(!is.na(playerid))  
 }
 
 
 #group pecota with other projections 
 if (exists("pecotapitch")) {
-  pitcher_proj <- bind_rows(pitcher_proj, pecotapitch)  
+  pitcher_proj <- pitcher_proj %>% 
+    mutate(dc_fl = TRUE) %>% 
+    bind_rows(pecotapitch)  
 }
 
+# get team names
+pitcher_teams <- pitcher_proj %>% 
+  filter(proj != "pecota") %>% 
+  select(playerid, Team) %>% 
+  distinct()
 
 #get vector of innings pitched
-innings <- filter(pitcher_proj, proj=="depthcharts") %>%
-      mutate(depthip = IP) %>%
-      select(Name, Team, playerid, depthip)
+innings <- filter(pitcher_proj, proj=="depthcharts" | proj=="pecota") %>%
+    filter(dc_fl == TRUE) %>% 
+    group_by(playerid) %>% 
+    mutate(depthip = mean(IP, na.rm=TRUE)) %>%
+    ungroup() %>% 
+    select(playerid, depthip) %>% 
+    distinct()
+
+#get vector of saves per IP
+saves_per_ip <- pitcher_proj %>% 
+  filter(proj == "depthcharts" | proj=="pecota") %>% 
+  group_by(playerid) %>% 
+  mutate(SV_IP = mean(SV/IP, na.rm=TRUE)) %>% 
+  ungroup() %>% 
+  select(playerid, SV_IP) %>% 
+  distinct()
+
+# get vecotr of names
+pitcher_names <- pitcher_proj %>% 
+  filter(proj!="pecota") %>% 
+  select(playerid, Name) %>% 
+  distinct()
+
 
 #spread per ip numbers across depth charts IP
 pitcher_proj <- mutate(pitcher_proj,
                        K_IP = K/IP,
-                       SV_IP = SV/IP,
                        W_IP = W/IP) %>%
       group_by(playerid) %>%
       summarise(ERA = mean(ERA),
                 WHIP = mean(WHIP),
                 K_IP = mean(K/IP),
-                SV_IP = mean(SV/IP, na.rm=TRUE),
-                W_IP = mean(W/IP))
+                W_IP = mean(W/IP)) %>% 
+  left_join(saves_per_ip) %>% 
+  mutate(SV_IP = ifelse(is.na(SV_IP), 0, SV_IP))
 
-pitcher_proj <- left_join(innings, pitcher_proj) %>%
-      mutate(IP = depthip,
-             ERA = round(ERA, 2),
-             WHIP = round(WHIP, 2),
-             K = round(K_IP*IP, 0),
-             SV = round(SV_IP*IP, 0),
-             W = round(W_IP*IP, 0), 
-             position = "pitcher") %>%
-      select(Name, Team, IP, W, ERA, SV, K, WHIP, playerid, position)
+#merge everything together, multiply per inning stats by IP
+pitcher_proj <- pitcher_names %>% 
+  left_join(innings) %>% 
+  left_join(pitcher_proj) %>%
+  left_join(pitcher_teams) %>% 
+  mutate(IP = depthip,
+         ERA = round(ERA, 2),
+         WHIP = round(WHIP, 2),
+         K = round(K_IP*IP, 0),
+         SV = round(SV_IP*IP, 0),
+         W = round(W_IP*IP, 0), 
+         position = "pitcher") %>%
+  select(Name, Team, IP, W, ERA, SV, K, WHIP, playerid, position) %>% 
+  distinct() 
+  
 
 
 
@@ -355,10 +426,22 @@ pitcher_projections <- pitcher_proj %>%
              W_points = marginal_W*coefs_for_calc[["w"]],
              SV_points = marginal_SV*coefs_for_calc[["sv"]],
              K_points = marginal_K*coefs_for_calc[["k"]],
-             marginal_total_points =  ERA_points + WHIP_points + W_points + SV_points + K_points,
-             dollar_value = marginal_total_points*(4680/1700)
-      )
+             marginal_total_points =  ERA_points + WHIP_points + W_points + SV_points + K_points
+      ) %>% 
+  arrange(-marginal_total_points)
 
+
+
+#calculate dollar values
+total_pitcher_points <- pitcher_projections %>% 
+  filter(row_number() <= 180) %>% 
+  pull(marginal_total_points) %>% 
+  sum()
+
+#estimate cost to buy 1 pitcher point
+pitcher_cost_per_point <- (PITCHER_AUCTION_PERCENT*4680)/total_pitcher_points
+pitcher_projections <- pitcher_projections %>% 
+  mutate(dollar_value = marginal_total_points * pitcher_cost_per_point)
 
 #do some pitcher diagnostics on how well calibrated replacement values are 
 pitcher_diagnostics <- pitcher_projections %>% 
@@ -372,6 +455,7 @@ pitcher_diagnostics <- pitcher_projections %>%
   
   
 pitcher_diagnostics
+
 
 pitcher_projections <- pitcher_projections %>% 
       #sort by dollar value
@@ -393,7 +477,7 @@ pitcher_projections <- pitcher_projections %>%
 #calculate number of positive players at given_position
 positive_pitchers <- function() {
   pitcher_projections %>% 
-  filter(dollar_value > 1) %>% 
+  filter(dollar_value >= 1) %>% 
   nrow()
 }
 positive_pitchers() 
@@ -402,16 +486,16 @@ pitcher_adjustment <- 0
 
 while (positive_pitchers() < 180) {
   pitcher_projections <- pitcher_projections %>% 
-    mutate(dollar_value = dollar_value + .25)
+    mutate(dollar_value = dollar_value + .1)
   
-  pitcher_adjustment <- pitcher_adjustment + .25
+  pitcher_adjustment <- pitcher_adjustment + .1
 }
 
 while (positive_pitchers() > 181) {
   pitcher_projections <- pitcher_projections %>% 
-    mutate(dollar_value = dollar_value - .25)
+    mutate(dollar_value = dollar_value - .1)
   
-  pitcher_adjustment <- pitcher_adjustment - .25
+  pitcher_adjustment <- pitcher_adjustment - .1
 }
 
 print(paste0("Pitcher Adjustment: ", pitcher_adjustment))

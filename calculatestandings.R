@@ -17,9 +17,9 @@ standings <- rosters_merged %>%
             W = sum(W, na.rm=TRUE),
             spent = sum(salary, na.rm=TRUE),
             left = 260-sum(salary, na.rm=TRUE), 
-            picks_left = sum(salary==0 & player == "")) %>% 
+            picks_left = sum(salary==0 & player == "" & !(position %in% BENCH_SPOTS))) %>% 
   mutate(across(R:SB, round, 1),
-         across(AVG:WHIP, round, 2),
+         across(AVG:WHIP, round, 4),
          across(K:W, round, 1))
 
 
@@ -77,17 +77,17 @@ standings <- mutate(standings, total_points =
       arrange(desc(total_points))
 
 
-
-bench_bucks <- draftpicks %>% 
-  filter(position == "B", salary > 0) %>% 
-  group_by(team) %>% 
-  summarise(bench_dollars = sum(salary)) 
-
-if (nrow(bench_bucks) > 0) {
-  standings <- standings %>% 
-    left_join(bench_bucks, by=c("team" = "team")) %>% 
-    mutate(
-      bench_dollars = ifelse(is.na(bench_dollars), 0, bench_dollars),
-      spent = spent + bench_dollars,
-      left = left - bench_dollars)
-}
+# 
+# bench_bucks <- draftpicks %>% 
+#   filter(position == "B", salary > 0) %>% 
+#   group_by(team) %>% 
+#   summarise(bench_dollars = sum(salary)) 
+# 
+# if (nrow(bench_bucks) > 0) {
+#   standings <- standings %>% 
+#     left_join(bench_bucks, by=c("team" = "team")) %>% 
+#     mutate(
+#       bench_dollars = ifelse(is.na(bench_dollars), 0, bench_dollars),
+#       spent = spent + bench_dollars,
+#       left = left - bench_dollars)
+# }

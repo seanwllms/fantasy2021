@@ -12,15 +12,15 @@ replacement_pitcher <- readxl::read_xlsx("./replacement/replacement_pitchers.xls
   select(W:WHIP) 
 
 #hard code more reasonable pitcher numbers
-replacement_pitcher$ERA <- 5.1
-replacement_pitcher$WHIP <- 1.43
+replacement_pitcher$ERA <- 5.07
+replacement_pitcher$WHIP <- 1.42
 replacement_pitcher$SV <- 0
-replacement_pitcher$W <- 4.68
-replacement_pitcher$K <- 93.5
+replacement_pitcher$W <- 4
+replacement_pitcher$K <- 84
 
 #hard code more reasonable hitter numbers
-replacement_hitter$R <- 53.5
-replacement_hitter$HR <- 13.7
-replacement_hitter$RBI <- 54
-replacement_hitter$AVG <- .2255
-replacement_hitter$SB <- 4.75
+replacement_hitter$R <- 50
+replacement_hitter$HR <- 12
+replacement_hitter$RBI <- 49.5
+replacement_hitter$AVG <- .224
+replacement_hitter$SB <- 4

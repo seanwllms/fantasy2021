@@ -17,18 +17,32 @@ view_team("pasadena") %>%
 #write roster csv to shiny folder
 write_csv(rosters_merged, path="./shiny_fantasy/rosters.csv")
 
+#get ADP
+nfbc_adp <- read_csv("./results/nfbc_adp.csv") 
+
+#get salaries
+salaries <- rosters_merged %>% 
+  select(player, salary) %>% 
+  filter(player != "") %>% 
+  rename(Name = player)
+
 #hitter and pitcher projections
-write_csv(pitcher_projections, path = "./results/pitcher_projections.csv")
+pitcher_projections %>% 
+  left_join(nfbc_adp) %>% 
+  left_join(salaries) %>%
+  write_csv(path = "./results/pitcher_projections.csv")
 
 hitter_projections %>% 
-  select(playerid, Name, Team, position, PA, AB, R, HR, RBI, SB, AVG, marginal_total_points, dollar_value, status) %>% 
-  write_csv(path = "./results/hitter_projections.csv")
+  select(playerid, Name, Team, position, PA, AB, R, HR, RBI, SB, AVG, marginal_total_points, dollar_value, auction_value, status) %>% 
+  left_join(nfbc_adp) %>%
+  left_join(salaries) %>% 
+  write_csv(path = "./results/hitter_projections.csv") 
 
 
 #create file for best remaining players
 hitterpitcher <- bind_rows(hitter_projections, pitcher_projections) %>%
       arrange(desc(dollar_value)) %>%
-      select(Name, Team, position, marginal_total_points, dollar_value, status)
+      select(Name, Team, position, marginal_total_points, dollar_value,auction_value, status)
 
 hitterpitcher <- filter(hitterpitcher, status != "drafted" & dollar_value > -5)
 
